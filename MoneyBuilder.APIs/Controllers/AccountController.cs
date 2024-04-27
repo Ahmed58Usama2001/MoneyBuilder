@@ -6,18 +6,15 @@ public class AccountController : BaseApiController
     private readonly SignInManager<AppUser> _signInManager;
     private readonly IAuthService _authService;
     private readonly RoleManager<IdentityRole> _roleManager;
-    private readonly IUnitOfWork _unitOfWork;
 
     public AccountController(UserManager<AppUser> userManager, SignInManager<AppUser> signInManager,
         IAuthService authService,
-        RoleManager<IdentityRole> roleManager,
-        IUnitOfWork unitOfWork)
+        RoleManager<IdentityRole> roleManager)
     {
         _userManager = userManager;
         _signInManager = signInManager;
         _authService = authService;
         _roleManager = roleManager;
-        _unitOfWork= unitOfWork;
     }
 
     [HttpPost("login")]
@@ -113,8 +110,6 @@ public class AccountController : BaseApiController
             string errors = string.Join(", ", result.Errors.Select(error => error.Description));
             return BadRequest(new ApiResponse(400, errors));
         }
-
-        await _userManager.UpdateAsync(user);
 
         return Ok(new UserDto
         {

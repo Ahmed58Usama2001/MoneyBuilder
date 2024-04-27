@@ -9,8 +9,16 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="AutoMapper" Version="13.0.1" />
-    <PackageReference Include="Swashbuckle.AspNetCore" Version="6.4.0" />
+	  <PackageReference Include="AutoMapper.Extensions.Microsoft.DependencyInjection" Version="12.0.1" />
+	  <PackageReference Include="Microsoft.EntityFrameworkCore.SqlServer" Version="8.0.4" />
+	  <PackageReference Include="Microsoft.EntityFrameworkCore.Tools" Version="8.0.4">
+		  <PrivateAssets>all</PrivateAssets>
+		  <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+	  </PackageReference>
+	  <PackageReference Include="Newtonsoft.Json" Version="13.0.3" />
+	  <PackageReference Include="RestSharp" Version="110.2.0" />
+
+	  <PackageReference Include="Swashbuckle.AspNetCore" Version="6.5.0" />
   </ItemGroup>
 
   <ItemGroup>
@@ -20,6 +28,7 @@
   <ItemGroup>
     <ProjectReference Include="..\MoneyBuilder.Core\MoneyBuilder.Core.csproj" />
     <ProjectReference Include="..\MoneyBuilder.Services\MoneyBuilder.Services.csproj" />
+    <ProjectReference Include="..\MoneyBuilder.Repository\MoneyBuilder.Repository.csproj" />
   </ItemGroup>
 
 </Project>

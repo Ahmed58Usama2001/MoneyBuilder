@@ -1,5 +1,3 @@
-
-
 namespace MoneyBuilder.APIs;
 
 public class Program
