@@ -3,6 +3,7 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using MoneyBuilder.Repository.Data.Configurations;
 
@@ -11,9 +12,11 @@ using MoneyBuilder.Repository.Data.Configurations;
 namespace MoneyBuilder.Repository.Migrations
 {
     [DbContext(typeof(MoneyBuilderContext))]
-    partial class MoneyBuilderContextModelSnapshot : ModelSnapshot
+    [Migration("20240428122433_BusinessTables")]
+    partial class BusinessTables
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -290,6 +293,10 @@ namespace MoneyBuilder.Repository.Migrations
                     b.Property<int>("LevelId")
                         .HasColumnType("int");
 
+                    b.Property<string>("MediaUrl")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
                     b.Property<string>("Title")
                         .IsRequired()
                         .HasMaxLength(255)
@@ -312,6 +319,10 @@ namespace MoneyBuilder.Repository.Migrations
                         .HasColumnType("int");
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<string>("MediaUrl")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("Objectives")
                         .HasMaxLength(450)
@@ -345,6 +356,10 @@ namespace MoneyBuilder.Repository.Migrations
 
                     b.Property<int>("LectureId")
                         .HasColumnType("int");
+
+                    b.Property<string>("MediaUrl")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("PictureUrl")
                         .HasColumnType("nvarchar(max)");
