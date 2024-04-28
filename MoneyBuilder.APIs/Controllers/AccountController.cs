@@ -1,4 +1,6 @@
-﻿namespace MoneyBuilder.APIs.Controllers;
+﻿using Newtonsoft.Json.Linq;
+
+namespace MoneyBuilder.APIs.Controllers;
 
 public class AccountController : BaseApiController
 {
@@ -61,13 +63,21 @@ public class AccountController : BaseApiController
                     To = model.Email,
                     Body = resetPasswordLink??string.Empty
                 };
+
                 EmailSettings.SendEmail(email);
-                return Ok(model);
+
+                var result = new UserDto()
+                {
+                    Email = model.Email,
+                    Token = token
+                };
+
+                return Ok(result);
             }
             return Unauthorized(new ApiResponse(401));
         }
 
-        return Ok(model);
+        return BadRequest(new ApiResponse(400));
     }
 
     [HttpPost("ResetPassword")]
