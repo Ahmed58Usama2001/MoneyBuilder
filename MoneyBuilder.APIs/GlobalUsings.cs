@@ -1,15 +1,15 @@
-﻿global using MoneyBuilder.Repository;
+﻿global using MoneyBuilder.Services;
+global using MoneyBuilder.Repository;
 global using MoneyBuilder.APIs.Errors;
 global using MoneyBuilder.APIs.Helpers;
 global using MoneyBuilder.Core.Entities;
 global using MoneyBuilder.APIs.Extensions;
 global using MoneyBuilder.APIs.MiddleWares;
 global using MoneyBuilder.APIs.Dtos.AccountDtos;
+global using MoneyBuilder.Core.Services.Contract;
 global using MoneyBuilder.Core.Entities.Identity;
-global using MoneyBuilder.Service.AuthModuleService;
 global using MoneyBuilder.Core.Repositories.Contract;
 global using MoneyBuilder.Repository.Data.Configurations;
-global using MoneyBuilder.Core.Services.Contract.AuthDomainContracts;
 
 global using Microsoft.AspNetCore.Mvc;
 global using Microsoft.AspNetCore.Identity;

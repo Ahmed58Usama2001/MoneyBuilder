@@ -1,4 +1,4 @@
-﻿namespace MoneyBuilder.Service.AuthModuleService;
+﻿namespace MoneyBuilder.Services;
 
 public class AuthService(IConfiguration configuration,
         UserManager<AppUser> userManager) : IAuthService
@@ -40,5 +40,5 @@ public class AuthService(IConfiguration configuration,
         return new JwtSecurityTokenHandler().WriteToken(token);
     }
 
-    
+
 }

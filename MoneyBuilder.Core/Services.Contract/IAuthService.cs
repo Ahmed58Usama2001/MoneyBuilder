@@ -1,4 +1,4 @@
-﻿namespace MoneyBuilder.Core.Services.Contract.AuthDomainContracts;
+﻿namespace MoneyBuilder.Core.Services.Contract;
 
 public interface IAuthService
 {

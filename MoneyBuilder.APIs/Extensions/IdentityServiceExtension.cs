@@ -1,4 +1,6 @@
-﻿namespace MoneyBuilder.APIs.Extensions;
+﻿using MoneyBuilder.Services;
+
+namespace MoneyBuilder.APIs.Extensions;
 
 public static class IdentityServiceExtension
 {
