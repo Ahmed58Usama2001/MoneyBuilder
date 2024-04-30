@@ -21,9 +21,8 @@ public class LevelService(IUnitOfWork unitOfWork) : ILevelService
         }
     }
 
-    public async Task<bool> DeleteLevel(int levelId)
+    public async Task<bool> DeleteLevel(Level level)
     {
-        var level = await _unitOfWork.Repository<Level>().GetByIdAsync(levelId);
 
         if (level == null)
             return false;
@@ -64,22 +63,23 @@ public class LevelService(IUnitOfWork unitOfWork) : ILevelService
         return level;
     }
 
-    public async Task<Level?> UpdateAnswer(int levelId, Level updatedlevel)
+    public async Task<Level?> UpdateLevel(Level storedLevel, Level newLevel)
     {
-        var level = await _unitOfWork.Repository<Level>().GetByIdAsync(levelId);
 
-        if (level == null || updatedlevel == null || string.IsNullOrWhiteSpace(updatedlevel.Title))
+        if (storedLevel == null || newLevel == null )
             return null;
 
-        level = updatedlevel;
+            storedLevel.Title=newLevel.Title;
+            storedLevel.Objectives=newLevel.Objectives;
+            storedLevel.PictureUrl=newLevel.PictureUrl;
 
         try
         {
-            _unitOfWork.Repository<Level>().Update(level);
+            _unitOfWork.Repository<Level>().Update(storedLevel);
             var result = await _unitOfWork.CompleteAsync();
             if (result <= 0) return null;
 
-            return level;
+            return storedLevel;
         }
         catch (Exception ex)
         {

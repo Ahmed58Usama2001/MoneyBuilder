@@ -4,7 +4,7 @@ public class Level:BaseEntityWithMediaUrl
 {
     public string Title { get; set; }
 
-    public string? PictureUrl
+    public string PictureUrl
     {
         get { return base.MediaUrl; }
         set { base.MediaUrl = value; }

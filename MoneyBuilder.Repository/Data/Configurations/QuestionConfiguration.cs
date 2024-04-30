@@ -13,8 +13,6 @@ internal class QuestionConfiguration : IEntityTypeConfiguration<Question>
                .IsRequired()
                .HasMaxLength(shortMaxLength);
 
-        builder.Ignore(q => q.MediaUrl);
-
         builder.Property(q => q.LectureId)
        .IsRequired();
 

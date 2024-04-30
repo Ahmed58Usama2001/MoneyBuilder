@@ -10,5 +10,6 @@ global using MoneyBuilder.Core.Specifications.QuestionSpecs;
 global using Microsoft.AspNetCore.Identity;
 
 global using System.Linq.Expressions;
+global using System.Text.Json.Serialization;
 global using System.ComponentModel.DataAnnotations;
 

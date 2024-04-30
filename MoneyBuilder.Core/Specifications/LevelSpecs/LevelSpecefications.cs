@@ -20,7 +20,7 @@ public class LevelSpecefications : BaseSpecifications<Level>
 
     private void AddIncludes()
     {
-        Includes.Add(p => p.Lectures??new());
+        Includes.Add(p => p.Lectures);
     }
 
 }

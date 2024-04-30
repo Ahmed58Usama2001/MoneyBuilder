@@ -5,6 +5,10 @@ public static class ApplicationServicesExtension
     public static IServiceCollection AddApplicationServices(this IServiceCollection services)
     {
         services.AddScoped(typeof(IUnitOfWork), typeof(UnitOfWork));
+        services.AddScoped(typeof(ILevelService), typeof(LevelService));
+        services.AddScoped(typeof(ILectureService), typeof(LectureService));
+        services.AddScoped(typeof(IQuestionService), typeof(QuestionService));
+        services.AddScoped(typeof(IAnswerService), typeof(AnswerService));
 
         services.AddAutoMapper(typeof(MappingProfiles));
         services.AddHttpClient();

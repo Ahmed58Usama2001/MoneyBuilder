@@ -7,5 +7,7 @@ public class UserProgress : BaseEntity
 
     public int CurrentLectureId { get; set; }
     public Lecture CurrentLecture { get; set; }
+
+    public bool  IsLectureOpened { get; set; }
 }
 

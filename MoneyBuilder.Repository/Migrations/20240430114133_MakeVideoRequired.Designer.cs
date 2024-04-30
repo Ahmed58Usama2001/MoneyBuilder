@@ -3,6 +3,7 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using MoneyBuilder.Repository.Data.Configurations;
 
@@ -11,9 +12,11 @@ using MoneyBuilder.Repository.Data.Configurations;
 namespace MoneyBuilder.Repository.Migrations
 {
     [DbContext(typeof(MoneyBuilderContext))]
-    partial class MoneyBuilderContextModelSnapshot : ModelSnapshot
+    [Migration("20240430114133_MakeVideoRequired")]
+    partial class MakeVideoRequired
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -322,7 +325,6 @@ namespace MoneyBuilder.Repository.Migrations
                         .HasColumnType("nvarchar(450)");
 
                     b.Property<string>("PictureUrl")
-                        .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("Title")
@@ -350,6 +352,9 @@ namespace MoneyBuilder.Repository.Migrations
 
                     b.Property<int>("LectureId")
                         .HasColumnType("int");
+
+                    b.Property<string>("PictureUrl")
+                        .HasColumnType("nvarchar(max)");
 
                     b.HasKey("Id");
 

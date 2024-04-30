@@ -8,7 +8,7 @@ public interface ILevelService
 
     Task<Level?> ReadByIdAsync(int levelId);
 
-    Task<Level?> UpdateAnswer(int levelId, Level updatedlevel);
+    Task<Level?> UpdateLevel(Level storedLevel, Level newLevel);
 
-    Task<bool> DeleteLevel(int levelId);
+    Task<bool> DeleteLevel(Level level);
 }

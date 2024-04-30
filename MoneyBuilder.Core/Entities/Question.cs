@@ -1,14 +1,8 @@
 ﻿namespace MoneyBuilder.Core.Entities;
 
-public class Question:BaseEntityWithMediaUrl
+public class Question:BaseEntity
 {
     public string Description { get; set; }
-
-    public string? PictureUrl
-    {
-        get { return base.MediaUrl; }
-        set { base.MediaUrl = value; }
-    }
 
     public int LectureId { get; set; }
     public Lecture Lecture { get; set; }

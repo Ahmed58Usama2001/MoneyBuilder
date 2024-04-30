@@ -4,7 +4,7 @@ public class Lecture : BaseEntityWithMediaUrl
 {
     public string Title { get; set; }
 
-    public string? VideoUrl
+    public string VideoUrl
     {
         get { return base.MediaUrl; }
         set { base.MediaUrl = value; }
@@ -15,6 +15,6 @@ public class Lecture : BaseEntityWithMediaUrl
     public int LevelId { get; set; }
     public Level Level { get; set; }
 
-
+    [JsonIgnore]
     public List<Question>? Questions { get; set; } = new();
 }
