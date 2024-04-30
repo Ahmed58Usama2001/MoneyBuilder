@@ -1,4 +1,6 @@
-﻿namespace MoneyBuilder.Services;
+﻿using MoneyBuilder.Core.Entities;
+
+namespace MoneyBuilder.Services;
 
 public class AnswerService(IUnitOfWork unitOfWork) : IAnswerService
 {
@@ -64,14 +66,14 @@ public class AnswerService(IUnitOfWork unitOfWork) : IAnswerService
         return answer;
     }
 
-    public async Task<Answer?> UpdateAnswer(int answerId, Answer updatedAnswer)
+    public async Task<Answer?> UpdateAnswer(int answerId, Answer newAnswer)
     {
         var answer = await _unitOfWork.Repository<Answer>().GetByIdAsync(answerId);
 
-        if (answer == null || updatedAnswer == null || string.IsNullOrWhiteSpace(updatedAnswer.Description))
+        if (answer == null || newAnswer == null || string.IsNullOrWhiteSpace(newAnswer.Description))
             return null;
 
-        answer = updatedAnswer;
+        answer = newAnswer;
 
         try
         {

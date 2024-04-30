@@ -8,7 +8,7 @@ public interface IAnswerService
 
     Task<Answer?> ReadByIdAsync(int answerId);
 
-    Task<Answer?> UpdateAnswer(int answerId, Answer updatedAnswer);
+    Task<Answer?> UpdateAnswer(int answerId, Answer newAnswer);
 
     Task<bool> DeleteAnswer(int answerId);
 }

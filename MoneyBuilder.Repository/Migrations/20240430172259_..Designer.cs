@@ -3,6 +3,7 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using MoneyBuilder.Repository.Data.Configurations;
 
@@ -11,9 +12,11 @@ using MoneyBuilder.Repository.Data.Configurations;
 namespace MoneyBuilder.Repository.Migrations
 {
     [DbContext(typeof(MoneyBuilderContext))]
-    partial class MoneyBuilderContextModelSnapshot : ModelSnapshot
+    [Migration("20240430172259_.")]
+    partial class _
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder

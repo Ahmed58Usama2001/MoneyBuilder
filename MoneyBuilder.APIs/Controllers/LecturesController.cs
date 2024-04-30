@@ -96,7 +96,7 @@ public class LecturesController(
     [ProducesResponseType(typeof(LectureReturnDto), StatusCodes.Status200OK)]
     [ProducesResponseType(typeof(ApiResponse), StatusCodes.Status400BadRequest)]
     [HttpDelete("{id}")]
-    public async Task<IActionResult> DeleteBlogPost(int id)
+    public async Task<IActionResult> DeleteQuestion(int id)
     {
         var lecture = await _unitOfWork.Repository<Lecture>().GetByIdAsync(id);
         if (lecture == null)

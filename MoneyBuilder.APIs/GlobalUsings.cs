@@ -7,13 +7,16 @@ global using MoneyBuilder.APIs.Extensions;
 global using MoneyBuilder.APIs.MiddleWares;
 global using MoneyBuilder.APIs.Dtos.LevelDtos;
 global using MoneyBuilder.APIs.Dtos.LectureDto;
+global using MoneyBuilder.APIs.Dtos.AnswerDtos;
 global using MoneyBuilder.APIs.Dtos.AccountDtos;
+global using MoneyBuilder.APIs.Dtos.QuestionDto;
 global using MoneyBuilder.Core.Services.Contract;
 global using MoneyBuilder.Core.Entities.Identity;
 global using MoneyBuilder.Core.Repositories.Contract;
 global using MoneyBuilder.Repository.Data.Configurations;
 global using MoneyBuilder.Core.Specifications.LevelSpecs;
 global using MoneyBuilder.Core.Specifications.LectureSpecs;
+global using MoneyBuilder.Core.Specifications.QuestionSpecs;
 
 global using Microsoft.AspNetCore.Mvc;
 global using Microsoft.AspNetCore.Identity;
