@@ -15,6 +15,5 @@ public class Lecture : BaseEntityWithMediaUrl
     public int LevelId { get; set; }
     public Level Level { get; set; }
 
-    [JsonIgnore]
     public List<Question>? Questions { get; set; } = new();
 }

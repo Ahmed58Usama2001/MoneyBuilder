@@ -1,23 +1,19 @@
-﻿
+﻿namespace MoneyBuilder.APIs.Controllers;
 
-namespace MoneyBuilder.APIs.Controllers;
-
-
+[Authorize]
 public class LevelsController(
     IMapper mapper,
-    UserManager<AppUser> userManager,
     ILevelService levelService,
     IUnitOfWork unitOfWork) : BaseApiController
 {
     private readonly IMapper _mapper = mapper;
     private readonly IUnitOfWork _unitOfWork = unitOfWork;
     private readonly ILevelService _levelService = levelService;
-    private readonly UserManager<AppUser> _userManager = userManager;
 
     [ProducesResponseType(typeof(LevelReturnDto), StatusCodes.Status200OK)]
     [ProducesResponseType(typeof(ApiResponse), StatusCodes.Status400BadRequest)]
     [HttpPost]
-    public async Task<ActionResult<LevelReturnDto>> CreateBlogPostAsync(LevelCreateDto levelDto)
+    public async Task<ActionResult<LevelReturnDto>> CreateLevelAsync(LevelCreateDto levelDto)
     {
         if (levelDto is null) return BadRequest(new ApiResponse(400));
 
@@ -48,7 +44,7 @@ public class LevelsController(
     [ProducesResponseType(typeof(LevelReturnDto), StatusCodes.Status200OK)]
     [ProducesResponseType(typeof(ApiResponse), StatusCodes.Status404NotFound)]
     [HttpGet("{id}")]
-    public async Task<ActionResult<LevelReturnDto>> GetSection(int id)
+    public async Task<ActionResult<LevelReturnDto>> GetLevel(int id)
     {
         Level? level = await _levelService.ReadByIdAsync(id);
 
@@ -62,7 +58,7 @@ public class LevelsController(
     [ProducesResponseType(typeof(LevelReturnDto), StatusCodes.Status200OK)]
     [ProducesResponseType(typeof(ApiResponse), StatusCodes.Status404NotFound)]
     [HttpPut("{id}")]
-    public async Task<ActionResult<LevelReturnDto>> UpdateSection(int id, LevelCreateDto updatedLevelDto)
+    public async Task<ActionResult<LevelReturnDto>> UpdateLevel(int id, LevelCreateDto updatedLevelDto)
     {
         Level? storedLevel = await _levelService.ReadByIdAsync(id);
 
@@ -89,13 +85,13 @@ public class LevelsController(
     [ProducesResponseType(typeof(LevelReturnDto), StatusCodes.Status200OK)]
     [ProducesResponseType(typeof(ApiResponse), StatusCodes.Status400BadRequest)]
     [HttpDelete("{id}")]
-    public async Task<IActionResult> DeleteBlogPost(int id)
+    public async Task<IActionResult> DeleteLevel(int id)
     {
         var level = await _unitOfWork.Repository<Level>().GetByIdAsync(id);
         if (level == null)
             return NotFound(new ApiResponse(404));
 
-        var result = await _levelService.DeleteLevel(level);
+        var result = await _levelService.DeleteLevel(id);
 
         if (result)
         {

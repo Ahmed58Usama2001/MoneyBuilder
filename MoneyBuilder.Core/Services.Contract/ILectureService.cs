@@ -8,7 +8,7 @@ public interface ILectureService
 
     Task<Lecture?> ReadByIdAsync(int lectureId);
 
-    Task<Lecture?> UpdateLecture(int lectureId, Lecture updatedLecture);
+    Task<Lecture?> UpdateLecture(Lecture storedLecture, Lecture newLecture);
 
     Task<bool> DeleteLecture(int lectureId);
 }

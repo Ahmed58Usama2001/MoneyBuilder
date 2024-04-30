@@ -1,4 +1,6 @@
 ﻿
+using MoneyBuilder.APIs.Dtos.LectureDto;
+
 namespace MoneyBuilder.APIs.Helpers;
 
 public class MappingProfiles : Profile
@@ -11,5 +13,16 @@ public class MappingProfiles : Profile
 
         CreateMap<Level, LevelReturnDto>()
             .ForMember(dest => dest.PictureUrl, opt => opt.MapFrom<GenericMediaUrlResolver<Level, LevelReturnDto>>());
+
+
+        CreateMap<LectureCreateDto, Lecture>()
+            .ForMember(dest => dest.VideoUrl, opt => opt.Ignore());
+
+        CreateMap<LectureUpdateDto, Lecture>()
+            .ForMember(dest => dest.VideoUrl, opt => opt.Ignore());
+
+        CreateMap<Lecture, LectureReturnDto>()
+            .ForMember(dest => dest.Level, opt => opt.MapFrom(src => src.Level.Title))
+            .ForMember(dest => dest.VideoUrl, opt => opt.MapFrom<GenericMediaUrlResolver<Lecture, LectureReturnDto>>());
     }
 }

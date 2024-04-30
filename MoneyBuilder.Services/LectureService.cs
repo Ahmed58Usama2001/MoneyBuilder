@@ -64,22 +64,22 @@ public class LectureService(IUnitOfWork unitOfWork) : ILectureService
         return lecture;
     }
 
-    public async Task<Lecture?> UpdateLecture(int lectureId, Lecture updatedLecture)
+    public async Task<Lecture?> UpdateLecture(Lecture storedLecture, Lecture newLecture)
     {
-        var lecture = await _unitOfWork.Repository<Lecture>().GetByIdAsync(lectureId);
-
-        if (lecture == null || updatedLecture == null || string.IsNullOrWhiteSpace(updatedLecture.Title))
+        if (storedLecture == null || newLecture == null)
             return null;
 
-        lecture = updatedLecture;
+        storedLecture.Title = newLecture.Title;
+        storedLecture.Description = newLecture.Description;
+        storedLecture.VideoUrl = newLecture.VideoUrl;
 
         try
         {
-            _unitOfWork.Repository<Lecture>().Update(lecture);
+            _unitOfWork.Repository<Lecture>().Update(storedLecture);
             var result = await _unitOfWork.CompleteAsync();
             if (result <= 0) return null;
 
-            return lecture;
+            return storedLecture;
         }
         catch (Exception ex)
         {

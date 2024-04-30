@@ -21,8 +21,9 @@ public class LevelService(IUnitOfWork unitOfWork) : ILevelService
         }
     }
 
-    public async Task<bool> DeleteLevel(Level level)
+    public async Task<bool> DeleteLevel(int levelId)
     {
+        var level = await _unitOfWork.Repository<Level>().GetByIdAsync(levelId);
 
         if (level == null)
             return false;

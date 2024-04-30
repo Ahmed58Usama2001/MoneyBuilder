@@ -21,8 +21,7 @@ public class LectureSpecifications :BaseSpecifications<Lecture>
     }
     private void AddIncludes()
     {
-        Includes.Add(c => c.Questions);
-
+        Includes.Add(p => p.Level);
     }
 }
 
