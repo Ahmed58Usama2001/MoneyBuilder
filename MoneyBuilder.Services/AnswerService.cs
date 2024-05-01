@@ -1,6 +1,4 @@
-﻿using MoneyBuilder.Core.Entities;
-
-namespace MoneyBuilder.Services;
+﻿namespace MoneyBuilder.Services;
 
 public class AnswerService(IUnitOfWork unitOfWork) : IAnswerService
 {

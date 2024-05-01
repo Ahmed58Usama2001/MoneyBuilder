@@ -1,23 +1,35 @@
-﻿namespace MoneyBuilder.APIs.Controllers;
+﻿using MoneyBuilder.Repository;
+using MoneyBuilder.Services;
+
+namespace MoneyBuilder.APIs.Controllers;
 
 public class AccountController : BaseApiController
 {
     private readonly UserManager<AppUser> _userManager;
     private readonly SignInManager<AppUser> _signInManager;
     private readonly IAuthService _authService;
+    private readonly IProgressService _progressService;
+    private readonly IUnitOfWork _unitOfWork;
+    private readonly ILectureService _lectureService;
     private readonly RoleManager<IdentityRole> _roleManager;
     private readonly MoneyBuilderContext _context;
 
     public AccountController(UserManager<AppUser> userManager, SignInManager<AppUser> signInManager,
         IAuthService authService,
+        IProgressService progressService,
         RoleManager<IdentityRole> roleManager,
-        MoneyBuilderContext context)
+        MoneyBuilderContext context,
+        IUnitOfWork unitOfWork,
+        ILectureService lectureService)
     {
         _userManager = userManager;
         _signInManager = signInManager;
         _authService = authService;
+        _progressService = progressService;
         _roleManager = roleManager;
         _context = context;
+        _unitOfWork = unitOfWork;
+        _lectureService = lectureService;
     }
 
     [HttpPost("login")]
@@ -158,6 +170,32 @@ public class AccountController : BaseApiController
             Log.Error(ex,ex.Message);
             return BadRequest(new ApiResponse(400));
         }
+    }
+
+    [Authorize]
+    [ProducesResponseType(typeof(UserProgress), StatusCodes.Status200OK)]
+    [ProducesResponseType(typeof(ApiResponse), StatusCodes.Status404NotFound)]
+    [HttpPut("Proceed/{nextLectureId}")]
+
+    public async Task<IActionResult> UpdateSubject( int nextLectureId)
+    {
+        var currentUserEmail = User.FindFirstValue(ClaimTypes.Email);
+        var user = await _userManager.FindByEmailAsync(currentUserEmail);
+
+        if(user == null) return Unauthorized(new ApiResponse(401));
+
+        var storedProgress = await _unitOfWork.Repository<UserProgress>().FindAsync(up => up.AppUserId == user.Id);
+        var nextLecture = await _lectureService.ReadByIdAsync(nextLectureId);
+
+        storedProgress.CurrentLectureId = nextLectureId;
+        storedProgress.CurrentLecture = nextLecture;
+
+        storedProgress = await _progressService.UpdateUserProgress(user.Id, storedProgress);
+
+        if (storedProgress == null)
+            return NotFound(new ApiResponse(404));
+
+        return Ok(true);
     }
 
     //[HttpPost("forgetPassword")]

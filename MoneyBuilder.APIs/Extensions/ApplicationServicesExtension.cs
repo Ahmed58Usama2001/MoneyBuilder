@@ -9,6 +9,7 @@ public static class ApplicationServicesExtension
         services.AddScoped(typeof(ILectureService), typeof(LectureService));
         services.AddScoped(typeof(IQuestionService), typeof(QuestionService));
         services.AddScoped(typeof(IAnswerService), typeof(AnswerService));
+        services.AddScoped(typeof(IProgressService), typeof(ProgressService));
 
         services.AddAutoMapper(typeof(MappingProfiles));
         services.AddHttpClient();
