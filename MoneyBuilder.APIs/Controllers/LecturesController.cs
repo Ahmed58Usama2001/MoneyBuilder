@@ -5,12 +5,13 @@ public class LecturesController(
     IMapper mapper,
     ILectureService lectureService,
     ILevelService levelService,
-    IUnitOfWork unitOfWork) : BaseApiController
+    IUnitOfWork unitOfWork, MoneyBuilderContext context) : BaseApiController
 {
     private readonly IMapper _mapper = mapper;
     private readonly IUnitOfWork _unitOfWork = unitOfWork;
     private readonly ILectureService _lectureService = lectureService;
     private readonly ILevelService _levelService = levelService;
+    private readonly MoneyBuilderContext _context = context;
 
     [ProducesResponseType(typeof(LectureReturnDto), StatusCodes.Status200OK)]
     [ProducesResponseType(typeof(ApiResponse), StatusCodes.Status400BadRequest)]
@@ -18,6 +19,8 @@ public class LecturesController(
     public async Task<ActionResult<LectureReturnDto>> CreateLectureAsync(LectureCreateDto lectureDto)
     {
         if (lectureDto is null) return BadRequest(new ApiResponse(400));
+
+        bool isFirstLec = !await _context.Lectures.AnyAsync();    
 
         Level? existingLevel = await _levelService.ReadByIdAsync(lectureDto.LevelId);
         if (existingLevel is null)
@@ -30,6 +33,18 @@ public class LecturesController(
         var createdLecture = await _lectureService.CreateLectureAsync(mappedLecture);
 
         if (createdLecture is null) return BadRequest(new ApiResponse(400));
+
+        if (isFirstLec)
+        {
+            // Update existing userProgress entries with the newly created lecture
+            var userProgressToUpdate = await _context.UsersProgress.ToListAsync();
+            foreach (var userProgress in userProgressToUpdate)
+            {
+                userProgress.CurrentLectureId = createdLecture.Id;
+                userProgress.CurrentLecture = createdLecture; 
+            }
+            await _context.SaveChangesAsync();
+        }
 
         return Ok(_mapper.Map<Lecture, LectureReturnDto>(createdLecture));
     }
