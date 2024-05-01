@@ -12,8 +12,8 @@ using MoneyBuilder.Repository.Data.Configurations;
 namespace MoneyBuilder.Repository.Migrations
 {
     [DbContext(typeof(MoneyBuilderContext))]
-    [Migration("20240428122433_BusinessTables")]
-    partial class BusinessTables
+    [Migration("20240501095152_InitDb")]
+    partial class InitDb
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -265,8 +265,11 @@ namespace MoneyBuilder.Repository.Migrations
                         .IsRequired()
                         .HasColumnType("nvarchar(450)");
 
-                    b.Property<int>("CurrentLectureId")
+                    b.Property<int?>("CurrentLectureId")
                         .HasColumnType("int");
+
+                    b.Property<bool>("IsLectureOpened")
+                        .HasColumnType("bit");
 
                     b.HasKey("Id");
 
@@ -293,16 +296,13 @@ namespace MoneyBuilder.Repository.Migrations
                     b.Property<int>("LevelId")
                         .HasColumnType("int");
 
-                    b.Property<string>("MediaUrl")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
                     b.Property<string>("Title")
                         .IsRequired()
                         .HasMaxLength(255)
                         .HasColumnType("nvarchar(255)");
 
                     b.Property<string>("VideoUrl")
+                        .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
                     b.HasKey("Id");
@@ -320,15 +320,12 @@ namespace MoneyBuilder.Repository.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
-                    b.Property<string>("MediaUrl")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
                     b.Property<string>("Objectives")
                         .HasMaxLength(450)
                         .HasColumnType("nvarchar(450)");
 
                     b.Property<string>("PictureUrl")
+                        .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("Title")
@@ -356,13 +353,6 @@ namespace MoneyBuilder.Repository.Migrations
 
                     b.Property<int>("LectureId")
                         .HasColumnType("int");
-
-                    b.Property<string>("MediaUrl")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("PictureUrl")
-                        .HasColumnType("nvarchar(max)");
 
                     b.HasKey("Id");
 
@@ -443,9 +433,7 @@ namespace MoneyBuilder.Repository.Migrations
 
                     b.HasOne("MoneyBuilder.Core.Entities.Lecture", "CurrentLecture")
                         .WithMany()
-                        .HasForeignKey("CurrentLectureId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
+                        .HasForeignKey("CurrentLectureId");
 
                     b.Navigation("AppUser");
 
@@ -468,7 +456,7 @@ namespace MoneyBuilder.Repository.Migrations
                     b.HasOne("MoneyBuilder.Core.Entities.Lecture", "Lecture")
                         .WithMany("Questions")
                         .HasForeignKey("LectureId")
-                        .OnDelete(DeleteBehavior.NoAction)
+                        .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
                     b.Navigation("Lecture");

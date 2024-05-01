@@ -1,6 +1,4 @@
-﻿using Newtonsoft.Json.Linq;
-
-namespace MoneyBuilder.APIs.Controllers;
+﻿namespace MoneyBuilder.APIs.Controllers;
 
 public class AccountController : BaseApiController
 {
@@ -8,15 +6,18 @@ public class AccountController : BaseApiController
     private readonly SignInManager<AppUser> _signInManager;
     private readonly IAuthService _authService;
     private readonly RoleManager<IdentityRole> _roleManager;
+    private readonly MoneyBuilderContext _context;
 
     public AccountController(UserManager<AppUser> userManager, SignInManager<AppUser> signInManager,
         IAuthService authService,
-        RoleManager<IdentityRole> roleManager)
+        RoleManager<IdentityRole> roleManager,
+        MoneyBuilderContext context)
     {
         _userManager = userManager;
         _signInManager = signInManager;
         _authService = authService;
         _roleManager = roleManager;
+        _context = context;
     }
 
     [HttpPost("login")]
@@ -34,72 +35,20 @@ public class AccountController : BaseApiController
             if (!result.Succeeded)
                 return Unauthorized(new ApiResponse(401));
 
+
             return Ok(new UserDto
             {
                 UserName = user.UserName ?? string.Empty,
                 Email = user.Email??string.Empty,
-                Token = await _authService.CreateTokenAsync(user, _userManager)
-            }); ;
+                Token = await _authService.CreateTokenAsync(user, _userManager),
+                UserProgress= await _context.UsersProgress.FirstOrDefaultAsync(up => up.AppUserId == user.Id)
+            });
         }
 
         return Unauthorized(new ApiResponse(401));
     }
 
-    [HttpPost("forgetPassword")]
-    public async Task<ActionResult<UserDto>> ForgetPassword(ForgetPasswordDto model)
-    {
-        if (ModelState.IsValid)
-        {
-            var user = await _userManager.FindByEmailAsync(model.Email);
-
-
-            if (user is not null)
-            {
-                var token = await _userManager.GeneratePasswordResetTokenAsync(user);
-                var resetPasswordLink = Url.Action("ResetPassword", "Account", new { Email = model.Email, Token = token }, Request.Scheme);
-                var email = new Email()
-                {
-                    Title = "Reset Password",
-                    To = model.Email,
-                    Body = resetPasswordLink??string.Empty
-                };
-
-                EmailSettings.SendEmail(email);
-
-                var result = new UserDto()
-                {
-                    Email = model.Email,
-                    Token = token
-                };
-
-                return Ok(result);
-            }
-            return Unauthorized(new ApiResponse(401));
-        }
-
-        return BadRequest(new ApiResponse(400));
-    }
-
-    [HttpPost("ResetPassword")]
-    public async Task<ActionResult<UserDto>> ResetPassword(ResetPasswordDto model)
-    {
-        if (ModelState.IsValid)
-        {
-            var user = await _userManager.FindByEmailAsync(model.Email);
-
-
-            if (user is not null)
-            {
-                var token = await _userManager.GeneratePasswordResetTokenAsync(user);
-                var result = await _userManager.ResetPasswordAsync(user, token, model.Password);
-                if (result.Succeeded)
-                    return Ok(model);
-                string errors = string.Join(", ", result.Errors.Select(error => error.Description));
-                return BadRequest(new ApiResponse(400, errors));
-            }
-        }
-        return Ok(model);
-    }
+   
 
     [HttpPost("register")]
     public async Task<ActionResult<UserDto>> Register(RegisterDto model)
@@ -121,13 +70,50 @@ public class AccountController : BaseApiController
             return BadRequest(new ApiResponse(400, errors));
         }
 
-        return Ok(new UserDto
-        {
-            UserName = user.UserName,
-            Email = user.Email,
-            Token = await _authService.CreateTokenAsync(user, _userManager)
-        });
+        int? currentLectureId = await _context.Lectures.AnyAsync()
+            ? await _context.Lectures.MinAsync(l => l.Id)
+            : null;
+        Lecture? currentLecture = currentLectureId != 0
+              ? await _context.Lectures.FirstOrDefaultAsync(l => l.Id == currentLectureId)
+              : null;  
 
+        UserProgress? userProgress = new UserProgress()
+        {
+            AppUser = user,
+            AppUserId=user.Id,
+            CurrentLectureId= currentLectureId,
+            CurrentLecture= currentLecture
+        };
+
+        try
+        {
+            _context.UsersProgress.Add(userProgress);
+
+
+            if (currentLecture is not null)
+            {
+                user.UserProgress = userProgress;
+                await _userManager.UpdateAsync(user);
+            }
+
+            await _context.SaveChangesAsync();
+
+            return Ok(new UserDto
+            {
+                UserName = user.UserName,
+                Email = user.Email,
+                Token = await _authService.CreateTokenAsync(user, _userManager),
+                UserProgress = userProgress
+            });
+
+        }
+        catch (Exception ex)
+        {
+            _context.UsersProgress.Remove(userProgress);
+
+            Log.Error(ex.ToString());
+            return BadRequest(new ApiResponse(400));
+        }
     }
 
 
@@ -169,5 +155,61 @@ public class AccountController : BaseApiController
             Log.Error(ex,ex.Message);
             return BadRequest(new ApiResponse(400));
         }
+    }
+
+    [HttpPost("forgetPassword")]
+    public async Task<ActionResult<UserDto>> ForgetPassword(ForgetPasswordDto model)
+    {
+        if (ModelState.IsValid)
+        {
+            var user = await _userManager.FindByEmailAsync(model.Email);
+
+
+            if (user is not null)
+            {
+                var token = await _userManager.GeneratePasswordResetTokenAsync(user);
+                var resetPasswordLink = Url.Action("ResetPassword", "Account", new { Email = model.Email, Token = token }, Request.Scheme);
+                var email = new Email()
+                {
+                    Title = "Reset Password",
+                    To = model.Email,
+                    Body = resetPasswordLink ?? string.Empty
+                };
+
+                EmailSettings.SendEmail(email);
+
+                var result = new UserDto()
+                {
+                    Email = model.Email,
+                    Token = token
+                };
+
+                return Ok(result);
+            }
+            return Unauthorized(new ApiResponse(401));
+        }
+
+        return BadRequest(new ApiResponse(400));
+    }
+
+    [HttpPost("ResetPassword")]
+    public async Task<ActionResult<UserDto>> ResetPassword(ResetPasswordDto model)
+    {
+        if (ModelState.IsValid)
+        {
+            var user = await _userManager.FindByEmailAsync(model.Email);
+
+
+            if (user is not null)
+            {
+                var token = await _userManager.GeneratePasswordResetTokenAsync(user);
+                var result = await _userManager.ResetPasswordAsync(user, token, model.Password);
+                if (result.Succeeded)
+                    return Ok(model);
+                string errors = string.Join(", ", result.Errors.Select(error => error.Description));
+                return BadRequest(new ApiResponse(400, errors));
+            }
+        }
+        return Ok(model);
     }
 }

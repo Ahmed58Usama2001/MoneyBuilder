@@ -5,10 +5,18 @@
 namespace MoneyBuilder.Repository.Migrations
 {
     /// <inheritdoc />
-    public partial class addOpenCheckBoolean : Migration
+    public partial class removeBoolFromProgress : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
+        {
+            migrationBuilder.DropColumn(
+                name: "IsLectureOpened",
+                table: "UsersProgress");
+        }
+
+        /// <inheritdoc />
+        protected override void Down(MigrationBuilder migrationBuilder)
         {
             migrationBuilder.AddColumn<bool>(
                 name: "IsLectureOpened",
@@ -16,14 +24,6 @@ namespace MoneyBuilder.Repository.Migrations
                 type: "bit",
                 nullable: false,
                 defaultValue: false);
-        }
-
-        /// <inheritdoc />
-        protected override void Down(MigrationBuilder migrationBuilder)
-        {
-            migrationBuilder.DropColumn(
-                name: "IsLectureOpened",
-                table: "UsersProgress");
         }
     }
 }

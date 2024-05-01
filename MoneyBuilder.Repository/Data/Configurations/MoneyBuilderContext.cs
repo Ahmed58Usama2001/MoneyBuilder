@@ -13,6 +13,8 @@ public class MoneyBuilderContext : IdentityDbContext<AppUser>
     {
         base.OnModelCreating(modelBuilder);
 
+
+
         modelBuilder.ApplyConfigurationsFromAssembly(Assembly.GetExecutingAssembly());
 
     }

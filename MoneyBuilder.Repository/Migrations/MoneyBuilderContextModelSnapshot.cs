@@ -262,11 +262,8 @@ namespace MoneyBuilder.Repository.Migrations
                         .IsRequired()
                         .HasColumnType("nvarchar(450)");
 
-                    b.Property<int>("CurrentLectureId")
+                    b.Property<int?>("CurrentLectureId")
                         .HasColumnType("int");
-
-                    b.Property<bool>("IsLectureOpened")
-                        .HasColumnType("bit");
 
                     b.HasKey("Id");
 
@@ -430,9 +427,7 @@ namespace MoneyBuilder.Repository.Migrations
 
                     b.HasOne("MoneyBuilder.Core.Entities.Lecture", "CurrentLecture")
                         .WithMany()
-                        .HasForeignKey("CurrentLectureId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
+                        .HasForeignKey("CurrentLectureId");
 
                     b.Navigation("AppUser");
 
