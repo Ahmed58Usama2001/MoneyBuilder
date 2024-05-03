@@ -53,9 +53,6 @@ public class Program
             await _dbContext.Database.MigrateAsync(); // Update-Database
             //await MultaqaTechContextSeed.SeedAsync(_dbContext); // Data Seeding
 
-
-            var _userManager = services.GetRequiredService<UserManager<AppUser>>();
-            /*await AppIdentityDbContextSeed.SeedUsersAsync(_userManager);*/ // Data Seeding
         }
         catch (Exception ex)
         {

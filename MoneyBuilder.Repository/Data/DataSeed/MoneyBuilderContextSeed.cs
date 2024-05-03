@@ -2,8 +2,8 @@
 
 public static class MoneyBuilderContextSeed
 {
-    //public async static Task SeedAsync(MultaqaTechContext _dbContext)
+    //public async static Task SeedAsync(MoneyBuilderContext _dbContext)
     //{
-        
+
     //}
 }

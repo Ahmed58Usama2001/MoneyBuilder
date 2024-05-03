@@ -1,6 +1,5 @@
 ﻿namespace MoneyBuilder.APIs.Controllers;
 
-[Authorize]
 public class LevelsController(
     IMapper mapper,
     ILevelService levelService,
@@ -10,6 +9,7 @@ public class LevelsController(
     private readonly IUnitOfWork _unitOfWork = unitOfWork;
     private readonly ILevelService _levelService = levelService;
 
+    [Authorize(Roles = "Admin")]
     [ProducesResponseType(typeof(LevelReturnDto), StatusCodes.Status200OK)]
     [ProducesResponseType(typeof(ApiResponse), StatusCodes.Status400BadRequest)]
     [HttpPost]
@@ -28,6 +28,7 @@ public class LevelsController(
         return Ok(_mapper.Map<Level, LevelReturnDto>(createdLevel));
     }
 
+    [AllowAnonymous]
     [ProducesResponseType(typeof(LevelReturnDto), StatusCodes.Status200OK)]
     [ProducesResponseType(typeof(ApiResponse), StatusCodes.Status404NotFound)]
     [HttpGet]
@@ -41,6 +42,7 @@ public class LevelsController(
         return Ok(_mapper.Map<IReadOnlyList<Level>, IReadOnlyList<LevelReturnDto>>(levels));
     }
 
+    [Authorize(Roles = "Admin,User")]
     [ProducesResponseType(typeof(LevelReturnDto), StatusCodes.Status200OK)]
     [ProducesResponseType(typeof(ApiResponse), StatusCodes.Status404NotFound)]
     [HttpGet("{id}")]
@@ -55,6 +57,7 @@ public class LevelsController(
         return Ok(_mapper.Map<LevelReturnDto>(level));
     }
 
+    [Authorize(Roles = "Admin")]
     [ProducesResponseType(typeof(LevelReturnDto), StatusCodes.Status200OK)]
     [ProducesResponseType(typeof(ApiResponse), StatusCodes.Status404NotFound)]
     [HttpPut("{id}")]
@@ -82,6 +85,7 @@ public class LevelsController(
         return Ok(_mapper.Map<LevelReturnDto>(storedLevel));
     }
 
+    [Authorize(Roles = "Admin")]
     [ProducesResponseType(typeof(LevelReturnDto), StatusCodes.Status200OK)]
     [ProducesResponseType(typeof(ApiResponse), StatusCodes.Status400BadRequest)]
     [HttpDelete("{id}")]

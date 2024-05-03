@@ -1,9 +1,5 @@
-﻿
-using MoneyBuilder.Core.Entities;
+﻿namespace MoneyBuilder.APIs.Controllers;
 
-namespace MoneyBuilder.APIs.Controllers;
-
-[Authorize]
 public class QuestionsController(
     IMapper mapper,
     IQuestionService questionService,
@@ -17,6 +13,7 @@ public class QuestionsController(
     private readonly IAnswerService _answerService = answerService;
     private readonly ILectureService _lectureService = lectureService;
 
+    [Authorize(Roles = "Admin")]
     [ProducesResponseType(typeof(QuestionReturnDto), StatusCodes.Status200OK)]
     [ProducesResponseType(typeof(ApiResponse), StatusCodes.Status400BadRequest)]
     [HttpPost]
@@ -67,11 +64,12 @@ public class QuestionsController(
         return Ok(_mapper.Map<Question, QuestionReturnDto>(createdQuestion));
     }
 
+    [Authorize(Roles = "Admin,User")]
     [ProducesResponseType(typeof(QuestionReturnDto), StatusCodes.Status200OK)]
     [ProducesResponseType(typeof(ApiResponse), StatusCodes.Status404NotFound)]
     [HttpGet]
     [Route("{lectureId}/questions")]
-    public async Task<ActionResult<IReadOnlyList<QuestionReturnDto>>> GetQuestionsByLevelId(int lectureId)
+    public async Task<ActionResult<IReadOnlyList<QuestionReturnDto>>> GetQuestionsByLectureId(int lectureId)
     {
         QuestionSpecificationParams speceficationsParams = new QuestionSpecificationParams { lectureId = lectureId };
         if (speceficationsParams.lectureId <= 0)
@@ -85,6 +83,7 @@ public class QuestionsController(
         return Ok(_mapper.Map<IReadOnlyList<Question>, IReadOnlyList<QuestionReturnDto>>(questions));
     }
 
+    [Authorize(Roles = "Admin,User")]
     [ProducesResponseType(typeof(QuestionReturnDto), StatusCodes.Status200OK)]
     [ProducesResponseType(typeof(ApiResponse), StatusCodes.Status404NotFound)]
     [HttpGet("{id}")]
@@ -99,6 +98,7 @@ public class QuestionsController(
         return Ok(_mapper.Map<QuestionReturnDto>(question));
     }
 
+    [Authorize(Roles = "Admin")]
     [ProducesResponseType(typeof(QuestionReturnDto), StatusCodes.Status200OK)]
     [ProducesResponseType(typeof(ApiResponse), StatusCodes.Status404NotFound)]
     [HttpPut("{id}")]
@@ -144,6 +144,7 @@ public class QuestionsController(
         return Ok(_mapper.Map<QuestionReturnDto>(storedQuestion));
     }
 
+    [Authorize(Roles = "Admin")]
     [ProducesResponseType(typeof(QuestionReturnDto), StatusCodes.Status200OK)]
     [ProducesResponseType(typeof(ApiResponse), StatusCodes.Status400BadRequest)]
     [HttpDelete("question/{Id}")]
@@ -157,6 +158,7 @@ public class QuestionsController(
          return Ok(true);
     }
 
+    [Authorize(Roles = "Admin")]
     [ProducesResponseType(typeof(QuestionReturnDto), StatusCodes.Status200OK)]
     [ProducesResponseType(typeof(ApiResponse), StatusCodes.Status400BadRequest)]
     [HttpDelete("answer/{Id}")]

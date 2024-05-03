@@ -1,5 +1,4 @@
-﻿using MoneyBuilder.Repository;
-using MoneyBuilder.Services;
+﻿using System.Data;
 
 namespace MoneyBuilder.APIs.Controllers;
 
@@ -31,7 +30,7 @@ public class AccountController : BaseApiController
         _unitOfWork = unitOfWork;
         _lectureService = lectureService;
     }
-
+    [AllowAnonymous]
     [HttpPost("login")]
     public async Task<ActionResult<UserDto>> Login(LoginDto model)
     {
@@ -47,21 +46,23 @@ public class AccountController : BaseApiController
             if (!result.Succeeded)
                 return Unauthorized(new ApiResponse(401));
 
+            var userRoles = await _userManager.GetRolesAsync(user);
 
             return Ok(new UserDto
             {
                 UserName = user.UserName ?? string.Empty,
                 Email = user.Email??string.Empty,
                 Token = await _authService.CreateTokenAsync(user, _userManager),
-                UserProgress= await _context.UsersProgress.Include(up => up.CurrentLecture).FirstOrDefaultAsync(up => up.AppUserId == user.Id)
+                UserProgress= await _context.UsersProgress.Include(up => up.CurrentLecture).FirstOrDefaultAsync(up => up.AppUserId == user.Id),
+                Roles = userRoles.ToList()
             });
         }
 
         return Unauthorized(new ApiResponse(401));
     }
 
-   
 
+    [AllowAnonymous]
     [HttpPost("register")]
     public async Task<ActionResult<UserDto>> Register(RegisterDto model)
     {
@@ -81,6 +82,13 @@ public class AccountController : BaseApiController
             string errors = string.Join(", ", result.Errors.Select(error => error.Description));
             return BadRequest(new ApiResponse(400, errors));
         }
+
+        var roleExists = await _roleManager.RoleExistsAsync("User");
+        if (!roleExists)
+        {
+            await _roleManager.CreateAsync(new IdentityRole("User"));
+        }
+        await _userManager.AddToRoleAsync(user, "User");
 
         int? currentLectureId = await _context.Lectures.AnyAsync()
             ? await _context.Lectures.MinAsync(l => l.Id)
@@ -128,14 +136,35 @@ public class AccountController : BaseApiController
         }
     }
 
+    [Authorize(Roles = "Admin")]
+    [HttpPost("AssignUserAsAdmin")]
+    public async Task<IActionResult> AssignUserAsAdmin(string userId)
+    {
+        var user =await _userManager.FindByIdAsync(userId);
+        if (user == null)
+            return BadRequest(new ApiResponse(400));
 
-    [Authorize]
+        var roleExists = await _roleManager.RoleExistsAsync("Admin");
+        if (!roleExists)
+        {
+            await _roleManager.CreateAsync(new IdentityRole("Admin"));
+        }
+        var result=await _userManager.AddToRoleAsync(user, "Admin");
+        if (result.Succeeded)
+            return Ok(true);
+
+        return BadRequest(false);
+    }
+
+    [Authorize(Roles = "Admin")]
     [HttpGet("GetCurrentUser")]
     public async Task<ActionResult<UserDto>> GetCurrentUser()
     {
         var email = User.FindFirstValue(ClaimTypes.Email);
 
         var user = await _userManager.FindByEmailAsync(email);
+
+        var userRoles = await _userManager.GetRolesAsync(user);
 
         return Ok(new UserDto()
         {
@@ -144,40 +173,22 @@ public class AccountController : BaseApiController
             Token = await _authService.CreateTokenAsync(user??new AppUser(), _userManager),
             UserProgress = await _context.UsersProgress
                             .Include(up => up.CurrentLecture) // Include the related Lecture entity
-                            .FirstOrDefaultAsync(up => up.AppUserId == user.Id)
-    });
+                            .FirstOrDefaultAsync(up => up.AppUserId == user.Id),
+            Roles = userRoles.ToList()
+        });
     }
 
+    [Authorize(Roles = "Admin")]
     [HttpGet("emailexists")]
     public async Task<ActionResult<bool>> CheckEmailExists(string email)
         => await _userManager.FindByEmailAsync(email) is not null;
 
-    [HttpPost("CreateRole")]
-    public async Task<ActionResult> CreateToken(string? name)
-    {
-        try
-        {
-            if (string.IsNullOrEmpty(name)) return BadRequest(new ApiResponse(400, "Role cannot be Empty !!"));
 
-            bool isRoleAlreadyExists = await _roleManager.RoleExistsAsync(name);
-            if (isRoleAlreadyExists) return BadRequest(new ApiResponse(400, $"Role: {name} Already Exists !!"));
-
-            await _roleManager.CreateAsync(new IdentityRole(name));
-            return Ok(name);
-        }
-        catch (Exception ex)
-        {
-            Log.Error(ex,ex.Message);
-            return BadRequest(new ApiResponse(400));
-        }
-    }
-
-    [Authorize]
+    [Authorize(Roles = "User")]
     [ProducesResponseType(typeof(UserProgress), StatusCodes.Status200OK)]
     [ProducesResponseType(typeof(ApiResponse), StatusCodes.Status404NotFound)]
     [HttpPut("Proceed/{nextLectureId}")]
-
-    public async Task<IActionResult> UpdateSubject( int nextLectureId)
+    public async Task<IActionResult> ProceedUserProgress( int nextLectureId)
     {
         var currentUserEmail = User.FindFirstValue(ClaimTypes.Email);
         var user = await _userManager.FindByEmailAsync(currentUserEmail);
@@ -197,6 +208,26 @@ public class AccountController : BaseApiController
 
         return Ok(true);
     }
+
+    //[HttpPost("CreateRole")]
+    //public async Task<ActionResult> CreateToken(string? name)
+    //{
+    //    try
+    //    {
+    //        if (string.IsNullOrEmpty(name)) return BadRequest(new ApiResponse(400, "Role cannot be Empty !!"));
+
+    //        bool isRoleAlreadyExists = await _roleManager.RoleExistsAsync(name);
+    //        if (isRoleAlreadyExists) return BadRequest(new ApiResponse(400, $"Role: {name} Already Exists !!"));
+
+    //        await _roleManager.CreateAsync(new IdentityRole(name));
+    //        return Ok(name);
+    //    }
+    //    catch (Exception ex)
+    //    {
+    //        Log.Error(ex,ex.Message);
+    //        return BadRequest(new ApiResponse(400));
+    //    }
+    //}
 
     //[HttpPost("forgetPassword")]
     //public async Task<ActionResult<UserDto>> ForgetPassword(ForgetPasswordDto model)

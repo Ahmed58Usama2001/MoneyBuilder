@@ -1,6 +1,5 @@
 ﻿namespace MoneyBuilder.APIs.Controllers;
 
-[Authorize]
 public class LecturesController(
     IMapper mapper,
     ILectureService lectureService,
@@ -13,6 +12,7 @@ public class LecturesController(
     private readonly ILevelService _levelService = levelService;
     private readonly MoneyBuilderContext _context = context;
 
+    [Authorize(Roles = "Admin")]
     [ProducesResponseType(typeof(LectureReturnDto), StatusCodes.Status200OK)]
     [ProducesResponseType(typeof(ApiResponse), StatusCodes.Status400BadRequest)]
     [HttpPost]
@@ -49,6 +49,7 @@ public class LecturesController(
         return Ok(_mapper.Map<Lecture, LectureReturnDto>(createdLecture));
     }
 
+    [Authorize(Roles = "Admin,User")]
     [ProducesResponseType(typeof(LectureReturnDto), StatusCodes.Status200OK)]
     [ProducesResponseType(typeof(ApiResponse), StatusCodes.Status404NotFound)]
     [HttpGet]
@@ -67,6 +68,7 @@ public class LecturesController(
         return Ok(_mapper.Map<IReadOnlyList<Lecture>, IReadOnlyList<LectureReturnDto>>(lectures));
     }
 
+    [Authorize(Roles = "Admin,User")]
     [ProducesResponseType(typeof(LectureReturnDto), StatusCodes.Status200OK)]
     [ProducesResponseType(typeof(ApiResponse), StatusCodes.Status404NotFound)]
     [HttpGet("{id}")]
@@ -81,6 +83,7 @@ public class LecturesController(
         return Ok(_mapper.Map<LectureReturnDto>(lecture));
     }
 
+    [Authorize(Roles = "Admin")]
     [ProducesResponseType(typeof(LectureReturnDto), StatusCodes.Status200OK)]
     [ProducesResponseType(typeof(ApiResponse), StatusCodes.Status404NotFound)]
     [HttpPut("{id}")]
@@ -108,6 +111,7 @@ public class LecturesController(
         return Ok(_mapper.Map<LectureReturnDto>(storedLecture));
     }
 
+    [Authorize(Roles = "Admin")]
     [ProducesResponseType(typeof(LectureReturnDto), StatusCodes.Status200OK)]
     [ProducesResponseType(typeof(ApiResponse), StatusCodes.Status400BadRequest)]
     [HttpDelete("{id}")]
