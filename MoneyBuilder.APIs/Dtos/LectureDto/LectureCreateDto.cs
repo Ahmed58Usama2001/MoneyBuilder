@@ -4,7 +4,7 @@ public class LectureCreateDto
 {
     public string Title { get; set; }
 
-    public IFormFile VideoUrl { get; set; }
+    public IFormFile? VideoUrl { get; set; }
 
     public string? Description { get; set; }
 

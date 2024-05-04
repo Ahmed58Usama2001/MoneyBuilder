@@ -4,7 +4,7 @@ public class Lecture : BaseEntityWithMediaUrl
 {
     public string Title { get; set; }
 
-    public string VideoUrl
+    public string? VideoUrl
     {
         get { return base.MediaUrl; }
         set { base.MediaUrl = value; }

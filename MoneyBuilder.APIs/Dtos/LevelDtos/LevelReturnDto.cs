@@ -6,7 +6,7 @@ public class LevelReturnDto
 
     public string Title { get; set; }
 
-    public string PictureUrl { get; set; }
+    public string? PictureUrl { get; set; }
 
     public string? Objectives { get; set; }
 
